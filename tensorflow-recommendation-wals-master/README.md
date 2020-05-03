@@ -36,7 +36,7 @@ algorithm in TensorFlow.  Components include:
 ![Cloud Shell](https://cloud.google.com/shell/docs/images/shell_icon.png)
 
 ### Option 2: Run Locally in Linux or Mac OS X
-
+g
 *These scripts will not work in Windows. If you have a Windows machine, we
 recommend you use Google Cloud Shell.*
 
@@ -128,13 +128,13 @@ This tutorial comes with a sample Google Analytics data set, containing page tra
 	   python setup.py sdist
 	   gsutil cp dist/wals_ml_engine-0.1.tar.gz ${BUCKET}/code/
 
-2. Run the wals model on the sample data set:
+2. Run the wals model on the sample data set: 
 
 	   ./mltrain.sh local ../data/recommendation_events.csv --data-type web_views --use-optimized
 
 This will take a couple minutes, and create a job directory under wals_ml_engine/jobs like "wals_ml_local_20180102_012345/model", containing the model files saved as numpy arrays.
 
-3. Copy the model files from this directory to the model folder in the project bucket:
+3. Copy the model files from this directory to the model folder in the project bucket: 
 
 	   export JOB_MODEL=$(find jobs -name "model" | tail -1)
 	   gsutil cp ${JOB_MODEL}/* ${BUCKET}/model/
@@ -153,9 +153,9 @@ This step can take several minutes to complete. You can do this in a separate sh
 1. Create the App Engine app in your project:
 
 	   gcloud app create --region=us-east1
-	   gcloud app update --no-split-health-checks
+	   gcloud app update --no-split-health-checks 
 
-2. Prepare the deploy template for the Cloud Endpoint API:
+2. Prepare the deploy template for the Cloud Endpoint API: 
 
 	   cd scripts
 	   ./prepare_deploy_api.sh                         # Prepare config file for the API.
@@ -171,7 +171,7 @@ This will output somthing like:
 
 4. Prepare the deploy template for the App Engine App:
 
-	   ./prepare_deploy_app.sh
+	   ./prepare_deploy_app.sh 
 
 You can ignore the script output "ERROR: (gcloud.app.create) The project [...] already contains an App Engine application. You can deploy your application using `gcloud app deploy`."  This is expected.
 
@@ -186,7 +186,7 @@ The script will output something like:
 
 This will take several minutes.
 
-	   cd ..
+	   cd ..   
 
 ### Deploy the Airflow service
 
@@ -201,7 +201,7 @@ Cloud Composer is the GCP managed service for Airflow. It is in beta at the time
 
 This process takes a few minutes to complete.
 
-2. Get the name of the Cloud Storage bucket created for you by Cloud Composer:
+2. Get the name of the Cloud Storage bucket created for you by Cloud Composer: 
 
     gcloud beta composer environments describe $CC_ENV \
       --location us-central1 --format="csv[no-heading](config.dagGcsPrefix)" | sed 's/.\{5\}$//'
@@ -216,7 +216,7 @@ This bucket contains subfolders for DAGs and plugins.
 
     export AIRFLOW_BUCKET="gs://[region-environment_name-random_id-bucket]"
 
-4. Copy the DAG training.py file to the dags folder in your Cloud Composer bucket:
+4. Copy the DAG training.py file to the dags folder in your Cloud Composer bucket: ## NOT DONE
 
     gsutil cp airflow/dags/training.py ${AIRFLOW_BUCKET}/dags
 
@@ -265,7 +265,7 @@ This will take a few minutes to complete.
 
 
 
-## Usage
+## Usage 
 
 ### rec_serve endpoint service
 
