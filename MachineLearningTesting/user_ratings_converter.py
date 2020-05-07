@@ -1,3 +1,4 @@
+# Converts u.data to user_likes.csv, removing 1-5 rating, changing to 0-1.
 import csv
 with open('ml-100k/u.data') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter="\t")
