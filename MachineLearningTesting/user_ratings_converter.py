@@ -5,8 +5,8 @@ with open('ml-100k/u.data') as csv_file:
     csv_writer = csv.writer(open("user_likes.csv", 'w'))
     for row in csv_reader:
         if int(row[2]) >= 3:
-            row[2] = True
+            row[2] = 2
         elif int(row[2]) < 3:
-            row[2] = False
+            row[2] = 1
         row.remove(row[3])
         csv_writer.writerow(row)
