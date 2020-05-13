@@ -4,17 +4,16 @@ import pandas as pd
 
 # Reading ratings file
 ratings = pd.read_csv('user_likes.csv', sep=',', names=['userId','movieId','rating'])
+print('Printing rating file...')
+print(ratings.head())
 
 # Reading movies file
 movies = pd.read_csv('movie_titles.csv', sep=',', names=['movieId','title'])
-
-movies.head()
-
-ratings.head()
+print('Printing movie file...')
+print(movies.head())
 
 n_users = ratings.userId.unique().shape[0]
 n_movies = ratings.movieId.unique().shape[0]
-
 
 Ratings = ratings.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
 Ratings.head()
@@ -38,7 +37,7 @@ preds = pd.DataFrame(all_user_predicted_ratings, columns = Ratings.columns)
 def recommend_movies(predictions, userID, movies, original_ratings, num_recommendations):
     
     # Get and sort the user's predictions
-    user_row_number = userID - 1 # User ID starts at 1, not 0
+    user_row_number = userID - 1
     sorted_user_predictions = preds.iloc[user_row_number].sort_values(ascending=False) # User ID starts at 1
     
     # Get the user's data and merge in the movie information.
@@ -46,8 +45,8 @@ def recommend_movies(predictions, userID, movies, original_ratings, num_recommen
     user_full = (user_data.merge(movies, how = 'left', left_on = 'movieId', right_on = 'movieId').
                      sort_values(['rating'], ascending=False)
                  )
-    print('User {} has already rated {} movies.'.format(userID, user_full.shape[0]))
-    print('Recommending highest {} predicted ratings movies not already rated.'.format(num_recommendations))
+    print('User {} has already swiped {} movies.'.format(userID, user_full.shape[0]))
+    print('Recommending {} movies not watched yet.'.format(num_recommendations))
 
     # Recommend the highest predicted rating movies that the user hasn't seen yet.
     recommendations = (movies[~movies['movieId'].isin(user_full['movieId'])].
@@ -62,6 +61,6 @@ def recommend_movies(predictions, userID, movies, original_ratings, num_recommen
     return user_full, recommendations
 
 
-already_rated, predictions = recommend_movies(preds, 50, movies, ratings, 20)
+already_rated, predictions = recommend_movies(preds, 1, movies, ratings, 5) # Number of recommendations
 
 print(predictions.head(20))
