@@ -3,13 +3,13 @@ import numpy as np
 import pandas as pd
 
 # Reading ratings file
-ratings = pd.read_csv('user_likes.csv', sep=',', names=['userId','movieId','rating'])
+ratings = pd.read_csv('converted_data/100k/user_likes.csv', sep=',', names=['userId','movieId','rating'])
 print('Printing rating file...')
 print(ratings.head())
 
 # Reading movies file
-movies = pd.read_csv('movie_titles.csv', sep=',', names=['movieId','title'])
-print('Printing movie file...')
+movies = pd.read_csv('converted_data/100k/movie_titles.csv', sep=',', names=['movieId','title'])
+print('\nPrinting movie file...')
 print(movies.head())
 
 n_users = ratings.userId.unique().shape[0]
@@ -45,7 +45,7 @@ def recommend_movies(predictions, userID, movies, original_ratings, num_recommen
     user_full = (user_data.merge(movies, how = 'left', left_on = 'movieId', right_on = 'movieId').
                      sort_values(['rating'], ascending=False)
                  )
-    print('User {} has already swiped {} movies.'.format(userID, user_full.shape[0]))
+    print('\nUser {} has already swiped {} movies.'.format(userID, user_full.shape[0]))
     print('Recommending {} movies not watched yet.'.format(num_recommendations))
 
     # Recommend the highest predicted rating movies that the user hasn't seen yet.
@@ -63,4 +63,27 @@ def recommend_movies(predictions, userID, movies, original_ratings, num_recommen
 
 already_rated, predictions = recommend_movies(preds, 1, movies, ratings, 5) # Number of recommendations
 
-print(predictions.head(20))
+print(predictions.head())
+print('\n')
+#####################################################################################
+
+# Surprise Python Package
+from surprise import Reader, Dataset, SVD, accuracy
+from surprise.model_selection import cross_validate
+
+reader = Reader()
+data = Dataset.load_from_df(ratings[['userId', 'movieId', 'rating']], reader)
+
+# Split the dataset for 5-fold evaluation
+# data.split(n_folds=5) # FUNCTION NOT WORKING
+
+svd = SVD()
+
+cross_validate(svd, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
+
+trainset = data.build_full_trainset()
+svd.fit(trainset) # CHANGED .train() TO .fit()
+
+ratings[ratings['userId'] == 1]
+print('\n')
+print(svd.predict(1, 276)) # UserID = 1, MovieID = 276
