@@ -64,6 +64,7 @@ def recommend_movies(predictions, userID, movies, original_ratings, num_recommen
 already_rated, predictions = recommend_movies(preds, 1, movies, ratings, 5) # Number of recommendations
 
 print(predictions.head())
+predictions.to_csv('predictions.csv', index = False)
 print('\n')
 #####################################################################################
 
