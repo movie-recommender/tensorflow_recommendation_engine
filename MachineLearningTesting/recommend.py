@@ -1,5 +1,34 @@
 import numpy as np
 import pandas as pd
+from google.cloud import storage
+
+"""Uploads file to bucket"""
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+    print(
+        "File {} uploaded to {}.".format(
+            source_file_name, destination_blob_name
+        )
+    )
+
+"""Downloads a blob from the bucket."""
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
+    print(
+        "Blob {} downloaded to {}.".format(
+            source_blob_name, destination_file_name
+        )
+    )
+
 
 def train(userLikes, movieTitles):
     # Reading files
@@ -59,11 +88,23 @@ def recommend(predictions, userID, movies, original_ratings, num_recommendations
 
     return recommendations
 
-predictionMatrix, movieTable, ratingTable = train('converted_data/100k/user_likes.csv','converted_data/100k/movie_titles.csv')
-predictions = recommend(predictionMatrix, 196, movieTable, ratingTable, 5) # UserID = 1, No. of recommendations = 5
+def main(event=None, context=None):
+    ## Add bucket name & source blob name (unique object path)
+    download_blob('bucket_name', 'source_blob', 'user_likes.csv')
+    download_blob('bucket_name', 'source_blob', 'movie_titles.csv')
 
-print(predictions.head())
-predictions.to_csv('predictions.csv', index = False)
+    predictionMatrix, movieTable, ratingTable = train('converted_data/100k/user_likes.csv','converted_data/100k/movie_titles.csv')
+    predictions = recommend(predictionMatrix, 196, movieTable, ratingTable, 5) # UserID = 1, No. of recommendations = 5
+
+    print(predictions.head())
+    predictions.to_csv('predictions.csv', index = False)
+
+    ## Add bucket name & destination blob name (unique object path)
+    upload_blob('bucket_name', 'predictions.csv', 'destination_blob_name')
+
+if __name__ == "__main__":
+    main()
+
 
 # # Predicting recommendation accuracy
 
